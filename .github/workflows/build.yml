@@ -577,7 +577,7 @@ jobs:
               // ===== NICKNAME OTOMATIS (hanya RUN 2) =====
               // mode: 0 OFF, 1 RANDOM (ketuk-ketuk), 2 REQUEST (nick sendiri, di-paste)
               // Alur per baris:  @x,y = ketuk | @x,y*N = ketuk N kali | !x,y = tahan | ~S = tunggu S detik | # = catatan
-              const val DEF_NICK_TEXT = "Ats-"
+              const val DEF_NICK_TEXT = "STOK-RIZZXY-"
               const val DEF_NICK_START = 101
               const val DEF_NICK_PRE = 2
               const val DEF_NICK_GAP_MS = 800
