@@ -5,13 +5,13 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: 8.7
       - name: Generate project files
@@ -2733,10 +2733,9 @@ jobs:
           Gyvi2N5XkkLPUq93OjEfH65ApJMbW1DNVeNXxyzSs9fAqgPJm5o/oOh4j7K1jUAAAAA=
           RZX_EOF
           base64 -d icon.b64 > icon.webp
-          for d in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
-            n=${d%%:*}; s=${d##*:}
+          for n in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
             mkdir -p app/src/main/res/mipmap-$n
-            convert icon.webp -resize ${s}x${s} app/src/main/res/mipmap-$n/ic_launcher.png
+            cp icon.webp app/src/main/res/mipmap-$n/ic_launcher.webp
           done
           rm icon.b64 icon.webp
       - name: Build
