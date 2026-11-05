@@ -577,8 +577,8 @@ jobs:
               // ===== NICKNAME OTOMATIS (hanya RUN 2) =====
               // mode: 0 OFF, 1 RANDOM (ketuk-ketuk), 2 REQUEST (nick sendiri, di-paste)
               // Alur per baris:  @x,y = ketuk | @x,y*N = ketuk N kali | !x,y = tahan | ~S = tunggu S detik | # = catatan
-              const val DEF_NICK_TEXT = "STOK-RIZZXY-"
-              const val DEF_NICK_START = 001
+              const val DEF_NICK_TEXT = "Ats-"
+              const val DEF_NICK_START = 101
               const val DEF_NICK_PRE = 2
               const val DEF_NICK_GAP_MS = 800
               const val DEF_NICK_AFTER = 3
@@ -679,6 +679,8 @@ jobs:
           import android.widget.Button
           import android.widget.CheckBox
           import android.widget.FrameLayout
+          import java.io.File
+          import java.util.concurrent.Callable
           import android.widget.EditText
           import android.widget.ImageView
           import android.widget.LinearLayout
@@ -750,7 +752,6 @@ jobs:
                   window.navigationBarColor = Theme.t(0xFF0B0714.toInt())
                   dpm = getSystemService(DevicePolicyManager::class.java)
                   admin = ComponentName(this, AdminReceiver::class.java)
-                  loadApps()
                   setContentView(buildUi())
                   if (Build.VERSION.SDK_INT >= 33 &&
                       checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -759,37 +760,98 @@ jobs:
                   }
                   AdbHelper.onChange = { runOnUiThread { adbSync() } }
                   refresh()
+                  // daftar aplikasi dimuat di belakang layar supaya halaman utama langsung tampil
+                  loadAppsAsync { refresh() }
               }
 
               override fun onDestroy() {
                   AdbHelper.onChange = null
+                  videoBg?.release()
+                  videoBg = null
                   super.onDestroy()
+              }
+
+              override fun onPause() {
+                  videoBg?.pausePlayback()
+                  super.onPause()
               }
 
               override fun onResume() {
                   super.onResume()
+                  videoBg?.resumePlayback()
                   if (::banner.isInitialized) refresh()
               }
 
-              private fun loadApps() {
+              /**
+               * Pindai aplikasi terpasang di thread background. Nama aplikasi disimpan di cache
+               * (labels.tsv, dikunci waktu ubah APK) sehingga pembukaan berikutnya jauh lebih cepat;
+               * nama yang belum ada di cache dibaca paralel.
+               */
+              private fun loadAppsAsync(after: () -> Unit) {
+                  Thread {
+                      val rows = scanApps()
+                      runOnUiThread {
+                          all = rows
+                          installedSet = rows.map { it.pkg }.toSet()
+                          after()
+                      }
+                  }.start()
+              }
+
+              private fun scanApps(): List<AppRow> {
                   val pm = packageManager
-                  all = pm.getInstalledApplications(0)
-                      .map { AppRow(it.packageName, it.loadLabel(pm).toString(), it.flags and ApplicationInfo.FLAG_SYSTEM != 0) }
+                  val cacheFile = File(filesDir, "labels.tsv")
+                  val cache = HashMap<String, Pair<Long, String>>()
+                  try {
+                      if (cacheFile.exists()) cacheFile.forEachLine { ln ->
+                          val p = ln.split('\t', limit = 3)
+                          if (p.size == 3) cache[p[0]] = (p[1].toLongOrNull() ?: 0L) to p[2]
+                      }
+                  } catch (_: Exception) {
+                  }
+                  val infos = pm.getInstalledApplications(0)
+                  val labels = HashMap<String, String>()
+                  val stamps = HashMap<String, Long>()
+                  val todo = ArrayList<ApplicationInfo>()
+                  for (ai in infos) {
+                      val stamp = try { File(ai.sourceDir).lastModified() } catch (_: Exception) { 0L }
+                      stamps[ai.packageName] = stamp
+                      val c = cache[ai.packageName]
+                      if (c != null && c.first == stamp) labels[ai.packageName] = c.second else todo.add(ai)
+                  }
+                  if (todo.isNotEmpty()) {
+                      val pool = Executors.newFixedThreadPool(4)
+                      try {
+                          val jobs = todo.map { ai ->
+                              Callable {
+                                  ai.packageName to (try { ai.loadLabel(pm).toString() } catch (_: Exception) { ai.packageName })
+                              }
+                          }
+                          for (f in pool.invokeAll(jobs)) {
+                              try {
+                                  val r = f.get()
+                                  labels[r.first] = r.second
+                              } catch (_: Exception) {
+                              }
+                          }
+                      } finally {
+                          pool.shutdown()
+                      }
+                      try {
+                          cacheFile.writeText(infos.joinToString("\n") { ai ->
+                              val l = (labels[ai.packageName] ?: ai.packageName).replace('\t', ' ').replace('\n', ' ')
+                              ai.packageName + "\t" + (stamps[ai.packageName] ?: 0L) + "\t" + l
+                          })
+                      } catch (_: Exception) {
+                      }
+                  }
+                  return infos
+                      .map {
+                          AppRow(it.packageName, labels[it.packageName] ?: it.packageName,
+                              it.flags and ApplicationInfo.FLAG_SYSTEM != 0)
+                      }
                       .sortedBy { it.label.lowercase() }
-                  installedSet = all.map { it.pkg }.toSet()
               }
-
-              private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
-
-              private fun type() = when (tab) { 0 -> "normal"; 4 -> "gift"; else -> "advance" }
-
-              private fun fmt(s: Int): String = when {
-                  s <= 0 -> "OFF"
-                  s >= 60 && s % 60 == 0 -> "${s / 60}m"
-                  else -> "${s}s"
-              }
-
-              // ===== helper tampilan =====
 
               private fun shape(color: Int, radius: Int, strokeDp: Int = 0, strokeColor: Int = 0) = GradientDrawable().apply {
                   cornerRadius = dp(radius).toFloat()
@@ -896,8 +958,16 @@ jobs:
                   }
                   titleRow.addView(title, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(10) })
                   titleRow.addView(iconBtn("↻", cyan) {
-                      loadApps(); refresh(); toast("Daftar aplikasi dimuat ulang")
+                      loadAppsAsync { refresh(); toast("Daftar aplikasi dimuat ulang") }
                   })
+                  if (Theme.hasVideo) {
+                      val snd = iconBtn(if (Theme.muted) "🔇" else "🔊", green) {}
+                      snd.setOnClickListener {
+                          toggleMute()
+                          snd.text = if (Theme.muted) "🔇" else "🔊"
+                      }
+                      titleRow.addView(snd)
+                  }
                   titleRow.addView(iconBtn("◐", green) { openTheme() })
                   titleRow.addView(iconBtn("⚙\uFE0E", green) { openSettings() })
                   headCard.addView(titleRow)
@@ -1046,20 +1116,36 @@ jobs:
 
               // ===== tema custom: warna + wallpaper =====
 
+              private var videoBg: VideoBg? = null
+
               private fun withWallpaper(content: View): View {
-                  val wp = Theme.wallpaper ?: return content
+                  val vf = Theme.videoFile(this)
+                  val wp = Theme.wallpaper
+                  if (wp == null && !(Theme.hasVideo && vf.exists())) return content
                   val fl = FrameLayout(this)
                   fl.setBackgroundColor(bg)
-                  fl.addView(ImageView(this).apply {
-                      setImageBitmap(wp)
-                      scaleType = ImageView.ScaleType.CENTER_CROP
-                  }, FrameLayout.LayoutParams(-1, -1))
+                  if (wp == null) {
+                      val v = VideoBg(this, vf, Theme.muted)
+                      videoBg = v
+                      fl.addView(v, FrameLayout.LayoutParams(-1, -1))
+                  } else {
+                      fl.addView(ImageView(this).apply {
+                          setImageBitmap(wp)
+                          scaleType = ImageView.ScaleType.CENTER_CROP
+                      }, FrameLayout.LayoutParams(-1, -1))
+                  }
                   fl.addView(View(this).apply { setBackgroundColor(Theme.dimColor()) }, FrameLayout.LayoutParams(-1, -1))
                   fl.addView(content, FrameLayout.LayoutParams(-1, -1))
                   return fl
               }
 
               private val REQ_WALL = 77
+
+              private fun toggleMute() {
+                  Theme.setMuted(this, !Theme.muted)
+                  videoBg?.isMuted = Theme.muted
+                  toast(if (Theme.muted) "Suara video: MUTE" else "Suara video: UNMUTE")
+              }
 
               private fun openTheme() {
                   val box = LinearLayout(this).apply {
@@ -1095,14 +1181,22 @@ jobs:
                   }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
 
                   label("WALLPAPER BACKGROUND")
-                  box.addView(softBtn("PILIH GAMBAR WALLPAPER") {
+                  box.addView(softBtn("PILIH GAMBAR / VIDEO WALLPAPER") {
                       dlg.dismiss()
                       val i = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                           addCategory(Intent.CATEGORY_OPENABLE)
-                          type = "image/*"
+                          type = "*/*"
+                          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
                       }
                       try { startActivityForResult(i, REQ_WALL) } catch (e: Exception) { toast("Galeri tidak tersedia") }
                   })
+                  if (Theme.hasVideo) {
+                      val muteBtn = softBtn("") {}
+                      fun lbl() { muteBtn.text = if (Theme.muted) "🔇 SUARA VIDEO: MUTE (ketuk = UNMUTE)" else "🔊 SUARA VIDEO: UNMUTE (ketuk = MUTE)" }
+                      lbl()
+                      muteBtn.setOnClickListener { toggleMute(); lbl() }
+                      box.addView(muteBtn, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+                  }
                   box.addView(softBtn("HAPUS WALLPAPER") {
                       Theme.clearWallpaper(this); dlg.dismiss(); recreate()
                   }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
@@ -1130,10 +1224,12 @@ jobs:
                   super.onActivityResult(requestCode, resultCode, data)
                   if (requestCode != REQ_WALL || resultCode != RESULT_OK) return
                   val uri = data?.data ?: return
+                  val isVideo = (contentResolver.getType(uri) ?: "").startsWith("video/")
+                  toast(if (isVideo) "Menyalin video…" else "Memuat gambar…")
                   Thread {
-                      val ok = Theme.saveWallpaper(this, uri)
+                      val ok = if (isVideo) Theme.saveVideo(this, uri) else Theme.saveWallpaper(this, uri)
                       runOnUiThread {
-                          if (ok) recreate() else toast("Gagal memuat gambar")
+                          if (ok) recreate() else toast(if (isVideo) "Gagal memuat video (maks 150 MB)" else "Gagal memuat gambar")
                       }
                   }.start()
               }
@@ -2824,7 +2920,16 @@ jobs:
               @Volatile var wallpaper: Bitmap? = null
                   private set
 
-              val hasWall: Boolean get() = wallpaper != null
+              /** true kalau wallpaper berupa video (file wallpaper.mp4 ada). */
+              @Volatile var hasVideo = false
+                  private set
+              /** suara video: default mute */
+              @Volatile var muted = true
+                  private set
+
+              val hasWall: Boolean get() = wallpaper != null || hasVideo
+
+              fun videoFile(c: Context): File = File(c.filesDir, "wallpaper.mp4")
 
               private fun sp(c: Context) = c.getSharedPreferences("theme", Context.MODE_PRIVATE)
               private fun wallFile(c: Context) = File(c.filesDir, "wallpaper.jpg")
@@ -2832,11 +2937,49 @@ jobs:
               fun load(c: Context) {
                   hue = sp(c).getFloat("hue", BASE_HUE)
                   dim = sp(c).getInt("dim", 1)
-                  wallpaper = try {
+                  muted = sp(c).getBoolean("muted", true)
+                  hasVideo = videoFile(c).exists()
+                  wallpaper = if (hasVideo) null else try {
                       val f = wallFile(c)
                       if (f.exists()) BitmapFactory.decodeFile(f.absolutePath) else null
                   } catch (e: Throwable) {
                       null
+                  }
+              }
+
+              fun setMuted(c: Context, m: Boolean) {
+                  muted = m
+                  sp(c).edit().putBoolean("muted", m).apply()
+              }
+
+              /** Salin video pilihan jadi wallpaper (maks 150 MB). Panggil dari thread background. */
+              fun saveVideo(c: Context, uri: Uri): Boolean {
+                  val tmp = File(c.filesDir, "wallpaper.tmp")
+                  return try {
+                      var total = 0L
+                      val limit = 150L * 1024 * 1024
+                      c.contentResolver.openInputStream(uri)?.use { ins ->
+                          tmp.outputStream().use { out ->
+                              val buf = ByteArray(64 * 1024)
+                              while (true) {
+                                  val n = ins.read(buf)
+                                  if (n < 0) break
+                                  total += n
+                                  if (total > limit) throw IllegalStateException("terlalu besar")
+                                  out.write(buf, 0, n)
+                              }
+                          }
+                      } ?: return false
+                      val dst = videoFile(c)
+                      dst.delete()
+                      if (!tmp.renameTo(dst)) return false
+                      try { wallFile(c).delete() } catch (_: Exception) {}
+                      wallpaper = null
+                      hasVideo = true
+                      true
+                  } catch (e: Throwable) {
+                      try { tmp.delete() } catch (_: Exception) {}
+                      false
                   }
               }
 
@@ -2896,6 +3039,8 @@ jobs:
                       val bmp = c.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, o2) }
                           ?: return false
                       wallFile(c).outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 88, it) }
+                      try { videoFile(c).delete() } catch (_: Exception) {}
+                      hasVideo = false
                       wallpaper = bmp
                       true
                   } catch (e: Throwable) {
@@ -2905,8 +3050,119 @@ jobs:
 
               fun clearWallpaper(c: Context) {
                   try { wallFile(c).delete() } catch (_: Exception) {}
+                  try { videoFile(c).delete() } catch (_: Exception) {}
+                  hasVideo = false
                   wallpaper = null
               }
+          }
+          RZX_EOF
+          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/VideoBg.kt')"
+          cat > 'app/src/main/java/com/rizzxy/store/VideoBg.kt' <<'RZX_EOF'
+          package com.rizzxy.store
+
+          import android.content.Context
+          import android.graphics.Matrix
+          import android.graphics.SurfaceTexture
+          import android.media.AudioAttributes
+          import android.media.MediaPlayer
+          import android.view.Surface
+          import android.view.TextureView
+          import java.io.File
+
+          /** Wallpaper video: diputar berulang, memenuhi layar (center-crop), suara bisa mute / unmute. */
+          class VideoBg(ctx: Context, private val file: File, muted: Boolean) :
+              TextureView(ctx), TextureView.SurfaceTextureListener {
+
+              private var mp: MediaPlayer? = null
+              private var surface: Surface? = null
+              private var vw = 0
+              private var vh = 0
+              private var ready = false
+
+              var isMuted: Boolean = muted
+                  set(v) {
+                      field = v
+                      applyVolume()
+                  }
+
+              init {
+                  surfaceTextureListener = this
+              }
+
+              private fun applyVolume() {
+                  val x = if (isMuted) 0f else 1f
+                  try { mp?.setVolume(x, x) } catch (_: Exception) {}
+              }
+
+              private fun begin(st: SurfaceTexture) {
+                  release()
+                  try {
+                      val s = Surface(st)
+                      surface = s
+                      val m = MediaPlayer()
+                      mp = m
+                      m.setSurface(s)
+                      m.setAudioAttributes(
+                          AudioAttributes.Builder()
+                              .setUsage(AudioAttributes.USAGE_MEDIA)
+                              .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                              .build()
+                      )
+                      m.setDataSource(file.absolutePath)
+                      m.isLooping = true
+                      m.setOnVideoSizeChangedListener { _, w, h ->
+                          vw = w; vh = h
+                          fit()
+                      }
+                      m.setOnPreparedListener { p ->
+                          ready = true
+                          applyVolume()
+                          try { p.start() } catch (_: Exception) {}
+                      }
+                      m.setOnErrorListener { _, _, _ -> true }
+                      m.prepareAsync()
+                  } catch (e: Exception) {
+                      release()
+                  }
+              }
+
+              /** Skala supaya video menutup seluruh view tanpa terdistorsi. */
+              private fun fit() {
+                  val w = width.toFloat()
+                  val h = height.toFloat()
+                  if (vw <= 0 || vh <= 0 || w <= 0f || h <= 0f) return
+                  val scale = Math.max(w / vw, h / vh)
+                  val m = Matrix()
+                  m.setScale(vw * scale / w, vh * scale / h, w / 2f, h / 2f)
+                  setTransform(m)
+              }
+
+              fun pausePlayback() {
+                  try { if (ready) mp?.pause() } catch (_: Exception) {}
+              }
+
+              fun resumePlayback() {
+                  try { if (ready) mp?.start() } catch (_: Exception) {}
+              }
+
+              fun release() {
+                  ready = false
+                  try { mp?.release() } catch (_: Exception) {}
+                  mp = null
+                  try { surface?.release() } catch (_: Exception) {}
+                  surface = null
+              }
+
+              override fun onSurfaceTextureAvailable(st: SurfaceTexture, w: Int, h: Int) = begin(st)
+
+              override fun onSurfaceTextureSizeChanged(st: SurfaceTexture, w: Int, h: Int) = fit()
+
+              override fun onSurfaceTextureDestroyed(st: SurfaceTexture): Boolean {
+                  release()
+                  return true
+              }
+
+              override fun onSurfaceTextureUpdated(st: SurfaceTexture) {}
           }
           RZX_EOF
           mkdir -p "$(dirname 'app/src/main/res/values/strings.xml')"
