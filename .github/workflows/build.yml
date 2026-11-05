@@ -26,15 +26,15 @@ jobs:
           }
 
           android {
-              namespace = "com.rizzxy.store"
+              namespace = "com.yiaa.store"
               compileSdk = 34
 
               defaultConfig {
-                  applicationId = "com.rizzxy.store"
+                  applicationId = "com.yiaa.store"
                   minSdk = 28
                   targetSdk = 34
-                  versionCode = 2
-                  versionName = "1.1"
+                  versionCode = 3
+                  versionName = "1.2"
               }
               buildTypes {
                   release { isMinifyEnabled = false }
@@ -92,8 +92,8 @@ jobs:
                   android:allowBackup="false"
                   android:icon="@mipmap/ic_launcher"
                   android:roundIcon="@mipmap/ic_launcher"
-                  android:label="Rizzxy Store"
-                  android:theme="@android:style/Theme.Material.NoActionBar">
+                  android:label="Yiaa Store"
+                  android:theme="@style/AppTheme">
 
                   <activity
                       android:name=".MainActivity"
@@ -116,7 +116,7 @@ jobs:
                   <service
                       android:name=".AutoService"
                       android:exported="false"
-                      android:label="Rizzxy Store"
+                      android:label="Yiaa Store"
                       android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
                       <intent-filter>
                           <action android:name="android.accessibilityservice.AccessibilityService" />
@@ -144,9 +144,9 @@ jobs:
               </application>
           </manifest>
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/AdbHelper.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/AdbHelper.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/AdbHelper.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/AdbHelper.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.app.Notification
           import android.app.NotificationChannel
@@ -244,7 +244,7 @@ jobs:
                           val gen = KeyPairGenerator.getInstance("RSA")
                           gen.initialize(2048)
                           val kp = gen.generateKeyPair()
-                          val name = X500Name("CN=RizzxyStore")
+                          val name = X500Name("CN=YiaaStore")
                           val now = System.currentTimeMillis()
                           val holder = JcaX509v3CertificateBuilder(
                               name,
@@ -266,7 +266,7 @@ jobs:
 
                   override fun getPrivateKey(): PrivateKey = priv
                   override fun getCertificate(): Certificate = cert
-                  override fun getDeviceName(): String = "RizzxyStore"
+                  override fun getDeviceName(): String = "YiaaStore"
               }
 
               @Synchronized
@@ -473,17 +473,17 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/AdminReceiver.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/AdminReceiver.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/AdminReceiver.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/AdminReceiver.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.app.admin.DeviceAdminReceiver
 
           class AdminReceiver : DeviceAdminReceiver()
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/AutoService.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/AutoService.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/AutoService.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/AutoService.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.accessibilityservice.AccessibilityService
           import android.accessibilityservice.GestureDescription
@@ -532,9 +532,9 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/Cfg.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/Cfg.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/Cfg.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/Cfg.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.content.Context
 
@@ -633,9 +633,9 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/MainActivity.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/MainActivity.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/MainActivity.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/MainActivity.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.Manifest
           import android.app.Activity
@@ -681,17 +681,17 @@ jobs:
               )
 
               // palet warna (neon gelap)
-              private val cyan = 0xFF22D3EE.toInt()
-              private val green = 0xFF10D9A0.toInt()
-              private val bg = 0xFF070B16.toInt()
-              private val card = 0xFF101A2C.toInt()
-              private val cardDark = 0xFF0C1424.toInt()
-              private val line = 0xFF1B4A4D.toInt()
-              private val muted = 0xFF94A3B8.toInt()
-              private val white = 0xFFE2E8F0.toInt()
+              private val cyan = 0xFFA855F7.toInt()
+              private val green = 0xFFC084FC.toInt()
+              private val bg = 0xFF0B0714.toInt()
+              private val card = 0xFF1A1030.toInt()
+              private val cardDark = 0xFF130B24.toInt()
+              private val line = 0xFF4C2A7A.toInt()
+              private val muted = 0xFFA59BC4.toInt()
+              private val white = 0xFFEDE9FE.toInt()
               private val red = 0xFFEF4444.toInt()
-              private val btnBg = 0xFF0F3B3B.toInt()
-              private val btnLine = 0xFF1B6B63.toInt()
+              private val btnBg = 0xFF3B1A66.toInt()
+              private val btnLine = 0xFF6D3FB5.toInt()
 
               data class AppRow(val pkg: String, val label: String, val system: Boolean)
 
@@ -722,6 +722,9 @@ jobs:
               private lateinit var adbCode: EditText
               private lateinit var adbConnPort: EditText
               private lateinit var adbStatus: TextView
+              private lateinit var adbGroup: LinearLayout
+              private lateinit var rootGroup: LinearLayout
+              private val modeBtns = mutableListOf<Button>()
               private lateinit var adbLog: TextView
 
               override fun onCreate(savedInstanceState: Bundle?) {
@@ -783,7 +786,7 @@ jobs:
               }
 
               private fun pill(b: Button, active: Boolean) {
-                  b.background = shape(if (active) 0xFF0E4F5C.toInt() else cardDark, 14, 1, if (active) cyan else 0xFF16202F.toInt())
+                  b.background = shape(if (active) 0xFF4C1D95.toInt() else cardDark, 14, 1, if (active) cyan else 0xFF24173D.toInt())
                   b.setTextColor(if (active) cyan else muted)
               }
 
@@ -820,7 +823,7 @@ jobs:
 
               private fun styleChip(v: TextView, active: Boolean) {
                   v.background = shape(if (active) cyan else cardDark, 10)
-                  v.setTextColor(if (active) 0xFF03222A.toInt() else white)
+                  v.setTextColor(if (active) 0xFF1E0B3A.toInt() else white)
               }
 
               private fun chip(t: String, onClick: () -> Unit) = TextView(this).apply {
@@ -833,7 +836,7 @@ jobs:
 
               private fun stepBtn(t: String, onClick: () -> Unit) = tv(t, 22f, cyan, true).apply {
                   gravity = Gravity.CENTER
-                  background = shape(0xFF0E3A44.toInt(), 12, 1, cyan)
+                  background = shape(0xFF3B1A66.toInt(), 12, 1, cyan)
                   setOnClickListener { onClick() }
               }
 
@@ -862,7 +865,7 @@ jobs:
                       background = shape(0xFF2A1A4A.toInt(), 10)
                   }
                   titleRow.addView(logo, LinearLayout.LayoutParams(dp(36), dp(36)))
-                  val title = tv("RIZZXY STORE", 14f, white, true).apply {
+                  val title = tv("YIAA STORE", 14f, white, true).apply {
                       letterSpacing = 0.08f
                       setOnLongClickListener { confirmReleaseOwner(); true }
                   }
@@ -874,7 +877,7 @@ jobs:
                   headCard.addView(titleRow)
 
                   val tabRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-                  listOf("NORMAL", "ADVANCE", "DATA", "ADB").forEachIndexed { i, name ->
+                  listOf("NORMAL", "ADVANCE", "DATA", "ADB/ROOT").forEachIndexed { i, name ->
                       val b = mkBtn(name) { tab = i; refresh() }
                       b.textSize = 11f
                       b.setPadding(0, 0, 0, 0)
@@ -1007,7 +1010,7 @@ jobs:
                   root.addView(adbPane, LinearLayout.LayoutParams(-1, 0, 1f))
 
                   // kredit owner (selalu tampil di bagian bawah)
-                  val credit = tv("APK INI MILIK RIZZXY — JANGAN DIJUAL BELIKAN!!!\nOwner: wa.me/${Cfg.OWNER_NUMBER}", 10f, muted, true).apply {
+                  val credit = tv("APK INI MILIK YIAA — JANGAN DIJUAL BELIKAN!!!\nOwner: wa.me/${Cfg.OWNER_NUMBER}", 10f, muted, true).apply {
                       gravity = Gravity.CENTER
                       setPadding(dp(4), dp(8), dp(4), 0)
                   }
@@ -1044,8 +1047,8 @@ jobs:
 
               private fun updateBanner() {
                   val msg = when {
-                      tab == 2 && !dpm.isDeviceOwnerApp(packageName) ->
-                          "Belum jadi Device Owner. Ketuk di sini, lalu pakai tab ADB (ADB nirkabel) untuk menjadikannya."
+                      tab == 2 && !dpm.isDeviceOwnerApp(packageName) && !rootMode() ->
+                          "Belum jadi Device Owner. Ketuk di sini, lalu pilih ADB atau ROOT di tab ADB/ROOT."
                       (tab == 0 || tab == 1 || tab == 4) && !Settings.canDrawOverlays(this) ->
                           "Izin 'tampil di atas aplikasi lain' belum aktif. Ketuk di sini untuk mengaktifkan."
                       else -> ""
@@ -1054,7 +1057,7 @@ jobs:
                   banner.visibility = if (msg.isEmpty()) View.GONE else View.VISIBLE
                   banner.setOnClickListener {
                       if ((tab == 0 || tab == 1 || tab == 4) && !Settings.canDrawOverlays(this)) requestOverlay()
-                      else if (tab == 2 && !dpm.isDeviceOwnerApp(packageName)) { tab = 3; refresh() }
+                      else if (tab == 2 && !dpm.isDeviceOwnerApp(packageName) && !rootMode()) { tab = 3; refresh() }
                   }
               }
 
@@ -1167,7 +1170,7 @@ jobs:
                       return
                   }
                   if (!accEnabled()) {
-                      toast("Aktifkan 'Rizzxy Store' di Accessibility dulu")
+                      toast("Aktifkan 'Yiaa Store' di Accessibility dulu")
                       startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                       return
                   }
@@ -1275,7 +1278,7 @@ jobs:
                   val box = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
                       setPadding(dp(18), dp(18), dp(18), dp(14))
-                      background = shape(0xFF0B1220.toInt(), 24, 1, line)
+                      background = shape(0xFF120A21.toInt(), 24, 1, line)
                   }
 
                   // judul + DEFAULT
@@ -1285,7 +1288,7 @@ jobs:
                   }
                   val topIcon = tv("⇅", 20f, cyan, true).apply {
                       gravity = Gravity.CENTER
-                      background = shape(0xFF0E3A44.toInt(), 24, 1, cyan)
+                      background = shape(0xFF3B1A66.toInt(), 24, 1, cyan)
                   }
                   top.addView(topIcon, LinearLayout.LayoutParams(dp(48), dp(48)))
                   val topTexts = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -1308,7 +1311,7 @@ jobs:
                   box.addView(label("1. TARGET SERVERS COUNT (2 TO 30):"))
                   val countBox = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
-                      background = shape(cardDark, 16, 1, 0xFF16202F.toInt())
+                      background = shape(cardDark, 16, 1, 0xFF24173D.toInt())
                       setPadding(dp(10), dp(10), dp(10), dp(10))
                   }
                   val countRow = LinearLayout(this).apply {
@@ -1346,7 +1349,7 @@ jobs:
                   fun delayBlock(title: String, presets: List<Int>, min: Int, get: () -> Int, put: (Int) -> Unit): View {
                       val wrap = LinearLayout(this).apply {
                           orientation = LinearLayout.VERTICAL
-                          background = shape(cardDark, 16, 1, 0xFF16202F.toInt())
+                          background = shape(cardDark, 16, 1, 0xFF24173D.toInt())
                           setPadding(dp(12), dp(10), dp(12), dp(12))
                       }
                       val hd = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
@@ -1393,7 +1396,7 @@ jobs:
                   box.addView(label("2B. NICKNAME OTOMATIS (RUN 2):"))
                   val nickBox = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
-                      background = shape(cardDark, 16, 1, 0xFF16202F.toInt())
+                      background = shape(cardDark, 16, 1, 0xFF24173D.toInt())
                       setPadding(dp(12), dp(10), dp(12), dp(12))
                   }
                   val modeNames = listOf("OFF", "RANDOM", "REQUEST")
@@ -1498,7 +1501,7 @@ jobs:
                           val good = ok()
                           icon.text = if (good) "✓" else "✕"
                           icon.setTextColor(if (good) green else red)
-                          c.background = shape(if (good) 0xFF0E2E2A.toInt() else 0xFF2A1418.toInt(), 14, 1, if (good) btnLine else 0xFF7F1D1D.toInt())
+                          c.background = shape(if (good) 0xFF2A1650.toInt() else 0xFF2A1418.toInt(), 14, 1, if (good) btnLine else 0xFF7F1D1D.toInt())
                       }
                       return c
                   }
@@ -1511,7 +1514,7 @@ jobs:
                   permRow.addView(
                       permChip("ACCESSIBILITY", { accEnabled() }) {
                           save(); dlg?.dismiss()
-                          toast("Aktifkan 'Rizzxy Store' di Accessibility")
+                          toast("Aktifkan 'Yiaa Store' di Accessibility")
                           startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                       },
                       LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(4) }
@@ -1520,12 +1523,12 @@ jobs:
 
                   // tombol bawah
                   val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-                  val saveBtn = tv("SAVE & CLOSE", 13f, 0xFFCBD5E1.toInt(), true).apply {
+                  val saveBtn = tv("SAVE & CLOSE", 13f, 0xFFDDD6FE.toInt(), true).apply {
                       gravity = Gravity.CENTER
-                      background = shape(cardDark, 16, 1, 0xFF16202F.toInt())
+                      background = shape(cardDark, 16, 1, 0xFF24173D.toInt())
                       setOnClickListener { save(); dlg?.dismiss() }
                   }
-                  val startBtn = tv("▶ START", 14f, 0xFF03222A.toInt(), true).apply {
+                  val startBtn = tv("▶ START", 14f, 0xFF1E0B3A.toInt(), true).apply {
                       gravity = Gravity.CENTER
                       background = shape(cyan, 16)
                       setOnClickListener { save(); dlg?.dismiss(); startRun() }
@@ -1554,11 +1557,24 @@ jobs:
                   if (numeric) inputType = InputType.TYPE_CLASS_NUMBER
               }
 
+              private fun rootMode() = Cfg.getInt(this, "accessMode", 0) == 1
+
+              private fun applyMode() {
+                  if (!::adbGroup.isInitialized) return
+                  val r = rootMode()
+                  adbGroup.visibility = if (r) View.GONE else View.VISIBLE
+                  rootGroup.visibility = if (r) View.VISIBLE else View.GONE
+                  modeBtns.forEachIndexed { i, b -> pill(b, (i == 1) == r) }
+                  adbSync()
+              }
+
               private fun buildAdbPane(): ScrollView {
-                  val box = LinearLayout(this).apply {
+                  val outer = LinearLayout(this).apply {
                       orientation = LinearLayout.VERTICAL
                       setPadding(0, dp(8), 0, dp(8))
                   }
+                  val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+                  adbGroup = box
                   fun lbl(t: String) = tv(t, 10f, muted, true).apply { setPadding(dp(2), dp(12), 0, dp(4)) }
                   fun wide(v: View, top: Int = 8) = box.addView(v, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(top) })
 
@@ -1566,7 +1582,51 @@ jobs:
                       setPadding(dp(14), dp(12), dp(14), dp(12))
                       background = shape(card, 16, 1, line)
                   }
-                  wide(adbStatus, 4)
+                  outer.addView(adbStatus, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+
+                  // pilih tipe akses: ADB (nirkabel) atau ROOT (langsung)
+                  val modeRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+                  listOf("ADB", "ROOT").forEachIndexed { i, name ->
+                      val b = mkBtn(name) {
+                          Cfg.setInt(this, "accessMode", i)
+                          applyMode(); updateBanner()
+                      }
+                      modeBtns += b
+                      modeRow.addView(b, LinearLayout.LayoutParams(0, dp(46), 1f).apply {
+                          if (i == 0) rightMargin = dp(4) else leftMargin = dp(4)
+                      })
+                  }
+                  outer.addView(modeRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+                  outer.addView(box, LinearLayout.LayoutParams(-1, -2))
+
+                  // ===== mode ROOT =====
+                  val rg = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+                  rootGroup = rg
+                  fun rwide(v: View, top: Int = 8) = rg.addView(v, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(top) })
+                  rwide(tv("Mode ROOT: untuk HP yang sudah root (Magisk / KernelSU / APatch), tanpa ADB dan tanpa PC. " +
+                      "Ketuk CEK AKSES ROOT lalu izinkan permintaan root. Setelah itu tab DATA bisa menghapus data aplikasi " +
+                      "langsung lewat root, tidak perlu Device Owner.", 11f, muted), 12)
+                  rwide(colorBtn("CEK AKSES ROOT", 0xFF7C3AED.toInt()) {
+                      adbAsync("CEK ROOT") {
+                          if (!RootHelper.check()) {
+                              throw IllegalStateException("Akses root ditolak / tidak ada. Izinkan Yiaa Store di Magisk/KernelSU lalu ulangi")
+                          }
+                          AdbHelper.log("Root OK (uid=0)")
+                      }
+                  }, 14)
+                  rwide(colorBtn("SET DEVICE OWNER (ROOT) — opsional", 0xFF6D28D9.toInt()) {
+                      adbAsync("SET DEVICE OWNER (ROOT)") {
+                          val out = RootHelper.setDeviceOwner(packageName)
+                          AdbHelper.log(out)
+                          if (out.contains("already some accounts", true)) {
+                              throw IllegalStateException("Hapus semua akun (Google dll.) di perangkat dulu, lalu ulangi")
+                          }
+                          if (out.contains("Exception", true) || out.contains("Error", true)) {
+                              throw IllegalStateException(out.lines().firstOrNull().orEmpty().take(120))
+                          }
+                      }
+                  })
+                  outer.addView(rg, LinearLayout.LayoutParams(-1, -2))
 
                   if (Build.VERSION.SDK_INT < 30) {
                       wide(tv("ADB nirkabel butuh Android 11 atau lebih baru.", 12f, red))
@@ -1603,7 +1663,7 @@ jobs:
                       AdbHelper.startDiscovery(this)
                       toast("Mendeteksi… buka dialog pairing / aktifkan Debugging nirkabel")
                   }, 14)
-                  wide(colorBtn("PAIR + CONNECT", 0xFF0E7490.toInt()) {
+                  wide(colorBtn("PAIR + CONNECT", 0xFF7C3AED.toInt()) {
                       val code = adbCode.text.toString().trim()
                       if (code.length != 6) { toast("Kode pairing harus 6 digit"); return@colorBtn }
                       val h = ip(); val pp = num(adbPairPort); val cp = num(adbConnPort)
@@ -1620,7 +1680,7 @@ jobs:
                       AdbHelper.startDiscovery(this)
                       adbAsync("CONNECT") { AdbHelper.connectAuto(this, h, cp) }
                   })
-                  wide(colorBtn("SET DEVICE OWNER", 0xFF047857.toInt()) {
+                  wide(colorBtn("SET DEVICE OWNER", 0xFF6D28D9.toInt()) {
                       adbAsync("SET DEVICE OWNER") {
                           if (!AdbHelper.connected) throw IllegalStateException("Belum terhubung ke ADB")
                           val out = AdbHelper.run(this, "dpm set-device-owner $packageName/.AdminReceiver").trim()
@@ -1639,15 +1699,16 @@ jobs:
                       adbSync()
                   })
 
-                  box.addView(lbl("LOG"))
+                  outer.addView(lbl("LOG"))
                   adbLog = tv("", 10f, cyan).apply {
                       typeface = Typeface.MONOSPACE
                       setPadding(dp(12), dp(10), dp(12), dp(10))
                       background = shape(cardDark, 12, 1, line)
                   }
-                  box.addView(adbLog)
+                  outer.addView(adbLog)
 
-                  return ScrollView(this).apply { addView(box) }
+                  applyMode()
+                  return ScrollView(this).apply { addView(outer) }
               }
 
               private fun adbAsync(label: String, work: () -> Unit) {
@@ -1667,9 +1728,18 @@ jobs:
               private fun adbSync() {
                   if (!::adbLog.isInitialized) return
                   val owner = dpm.isDeviceOwnerApp(packageName)
-                  adbStatus.text = (if (AdbHelper.connected) "ADB: TERHUBUNG ✓" else "ADB: BELUM TERHUBUNG") +
-                      "   ·   Device Owner: " + (if (owner) "YA ✓" else "TIDAK")
-                  adbStatus.setTextColor(if (AdbHelper.connected) green else white)
+                  val good: Boolean
+                  val head: String
+                  if (rootMode()) {
+                      val r = RootHelper.rooted
+                      good = r == true
+                      head = "ROOT: " + when (r) { true -> "TERSEDIA ✓"; false -> "TIDAK ADA"; null -> "BELUM DICEK" }
+                  } else {
+                      good = AdbHelper.connected
+                      head = if (AdbHelper.connected) "ADB: TERHUBUNG ✓" else "ADB: BELUM TERHUBUNG"
+                  }
+                  adbStatus.text = head + "   ·   Device Owner: " + (if (owner) "YA ✓" else "TIDAK")
+                  adbStatus.setTextColor(if (good) green else white)
                   val pp = AdbHelper.pairPort
                   if (pp > 0 && adbPairPort.text.toString() != pp.toString()) adbPairPort.setText(pp.toString())
                   val cp = AdbHelper.connPort
@@ -1724,23 +1794,24 @@ jobs:
               // ===== DATA: hapus data =====
 
               private fun openConsole() {
-                  if (!dpm.isDeviceOwnerApp(packageName)) { toast("Belum jadi Device Owner"); return }
+                  val viaRoot = rootMode()
+                  if (!viaRoot && !dpm.isDeviceOwnerApp(packageName)) { toast("Belum jadi Device Owner (atau pilih mode ROOT di tab ADB/ROOT)"); return }
                   val targets = selected.toList()
                   val tv = TextView(this).apply {
                       typeface = Typeface.MONOSPACE; textSize = 11f; setTextColor(cyan)
                       setPadding(dp(16), dp(12), dp(16), dp(12))
                       text = buildString {
-                          append("$ rizzxy-cli --reset --targets=${targets.size}\n")
-                          append("> MODE: DEVICE OWNER DIRECT PURGE\n")
+                          append("$ yiaa-cli --reset --targets=${targets.size}\n")
+                          append(if (viaRoot) "> MODE: ROOT DIRECT PURGE\n" else "> MODE: DEVICE OWNER DIRECT PURGE\n")
                           append("> SELECTED TARGET LIST:\n")
                           targets.forEach { append("  • $it\n") }
                       }
                   }
                   AlertDialog.Builder(this)
-                      .setTitle("RIZZXY // CONSOLE")
+                      .setTitle("YIAA // CONSOLE")
                       .setView(ScrollView(this).apply { addView(tv) })
                       .setNegativeButton("CANCEL", null)
-                      .setPositiveButton("EXECUTE") { _, _ -> execute(targets) }
+                      .setPositiveButton("EXECUTE") { _, _ -> if (viaRoot) executeRoot(targets) else execute(targets) }
                       .show()
               }
 
@@ -1764,6 +1835,21 @@ jobs:
                           step(false)
                       }
                   }
+              }
+
+              private fun executeRoot(targets: List<String>) {
+                  Thread {
+                      var ok = 0
+                      for (p in targets) {
+                          try { if (RootHelper.clearData(p)) ok++ } catch (e: Exception) {
+                              AdbHelper.log("✕ clear $p: " + (e.message ?: e.javaClass.simpleName))
+                          }
+                      }
+                      runOnUiThread {
+                          toast("CLEARED $ok APPS" + if (ok < targets.size) " (${targets.size - ok} gagal)" else "")
+                          selected.clear(); refresh()
+                      }
+                  }.start()
               }
 
               private fun confirmReleaseOwner() {
@@ -1799,7 +1885,7 @@ jobs:
 
                       val check = tv("✓", 20f, if (on) green else 0xFF334155.toInt(), true).apply {
                           gravity = Gravity.CENTER
-                          background = shape(if (on) 0xFF0F2E2C.toInt() else cardDark, 12, 1, if (on) btnLine else 0xFF16202F.toInt())
+                          background = shape(if (on) 0xFF2A1650.toInt() else cardDark, 12, 1, if (on) btnLine else 0xFF24173D.toInt())
                           setOnClickListener { toggle() }
                       }
                       val names = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
@@ -1872,9 +1958,9 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/NickAuto.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/NickAuto.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/NickAuto.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/NickAuto.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.content.ClipData
           import android.content.ClipboardManager
@@ -1964,9 +2050,9 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/PairReceiver.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/PairReceiver.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/PairReceiver.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/PairReceiver.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.app.RemoteInput
           import android.content.BroadcastReceiver
@@ -1999,9 +2085,9 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/PointPicker.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/PointPicker.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/PointPicker.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/PointPicker.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.content.ClipData
           import android.content.ClipboardManager
@@ -2126,7 +2212,7 @@ jobs:
                   val bgDraw = GradientDrawable()
                   bgDraw.cornerRadius = 10 * density
                   bgDraw.setColor(0xE6081018.toInt())
-                  bgDraw.setStroke((1 * density).toInt(), 0xFF22D3EE.toInt())
+                  bgDraw.setStroke((1 * density).toInt(), 0xFFA855F7.toInt())
                   box.background = bgDraw
                   box.addView(label)
 
@@ -2211,9 +2297,69 @@ jobs:
               }
           }
           RZX_EOF
-          mkdir -p "$(dirname 'app/src/main/java/com/rizzxy/store/RunService.kt')"
-          cat > 'app/src/main/java/com/rizzxy/store/RunService.kt' <<'RZX_EOF'
-          package com.rizzxy.store
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/RootHelper.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/RootHelper.kt' <<'RZX_EOF'
+          package com.yiaa.store
+
+          import java.util.concurrent.TimeUnit
+
+          /**
+           * Akses ROOT langsung (tanpa ADB): jalankan perintah shell lewat `su`.
+           * Dipakai untuk set Device Owner dan hapus data aplikasi (pm clear).
+           */
+          object RootHelper {
+
+              /** null = belum dicek, true = root tersedia, false = tidak ada / ditolak. */
+              @Volatile
+              var rooted: Boolean? = null
+                  private set
+
+              private val pkgRe = Regex("^[A-Za-z0-9._]+$")
+
+              /** Jalankan satu perintah sebagai root. Kembalikan output gabungan (stdout+stderr). */
+              fun run(cmd: String, timeoutSec: Long = 30): String {
+                  val p = try {
+                      ProcessBuilder("su", "-c", cmd).redirectErrorStream(true).start()
+                  } catch (e: Exception) {
+                      rooted = false
+                      throw IllegalStateException("Perintah su tidak ditemukan (HP belum root)")
+                  }
+                  var out = ""
+                  val reader = Thread { out = p.inputStream.bufferedReader().readText() }
+                  reader.start()
+                  if (!p.waitFor(timeoutSec, TimeUnit.SECONDS)) {
+                      p.destroyForcibly()
+                      throw IllegalStateException("Perintah root timeout (cek izin root di Magisk/KernelSU)")
+                  }
+                  reader.join(2000)
+                  return out
+              }
+
+              /** Cek apakah izin root diberikan (akan memunculkan dialog Magisk/KernelSU). */
+              fun check(): Boolean {
+                  val ok = try {
+                      run("id", 20).contains("uid=0")
+                  } catch (e: IllegalStateException) {
+                      rooted = false
+                      throw e
+                  }
+                  rooted = ok
+                  return ok
+              }
+
+              /** Hapus data satu aplikasi (setara "Clear data"). */
+              fun clearData(pkg: String): Boolean {
+                  if (!pkgRe.matches(pkg)) return false
+                  return run("pm clear $pkg", 30).contains("Success", true)
+              }
+
+              fun setDeviceOwner(pkg: String): String =
+                  run("dpm set-device-owner $pkg/.AdminReceiver", 30).trim()
+          }
+          RZX_EOF
+          mkdir -p "$(dirname 'app/src/main/java/com/yiaa/store/RunService.kt')"
+          cat > 'app/src/main/java/com/yiaa/store/RunService.kt' <<'RZX_EOF'
+          package com.yiaa.store
 
           import android.app.ActivityManager
           import android.app.Notification
@@ -2290,7 +2436,7 @@ jobs:
                   val nm = getSystemService(NotificationManager::class.java)
                   nm.createNotificationChannel(NotificationChannel("run", "Run", NotificationManager.IMPORTANCE_LOW))
                   val n = Notification.Builder(this, "run")
-                      .setContentTitle("Rizzxy Store")
+                      .setContentTitle("Yiaa Store")
                       .setContentText("Membuka server bergantian")
                       .setSmallIcon(android.R.drawable.ic_media_play)
                       .build()
@@ -2428,12 +2574,12 @@ jobs:
                   val bgDraw = GradientDrawable()
                   bgDraw.cornerRadius = dp(12).toFloat()
                   bgDraw.setColor(0xE6081018.toInt())
-                  bgDraw.setStroke(dp(1), 0xFF22D3EE.toInt())
+                  bgDraw.setStroke(dp(1), 0xFFA855F7.toInt())
                   box.background = bgDraw
 
                   val t = TextView(this)
                   t.text = "[RUN] SIAP"
-                  t.setTextColor(0xFF22D3EE.toInt())
+                  t.setTextColor(0xFFA855F7.toInt())
                   t.textSize = 11f
                   t.typeface = Typeface.DEFAULT_BOLD
 
@@ -2441,7 +2587,7 @@ jobs:
                   b.max = 100
 
                   val l = TextView(this)
-                  l.setTextColor(0xFFCBD5E1.toInt())
+                  l.setTextColor(0xFFDDD6FE.toInt())
                   l.textSize = 9f
                   l.typeface = Typeface.MONOSPACE
 
@@ -2498,7 +2644,23 @@ jobs:
           cat > 'app/src/main/res/values/strings.xml' <<'RZX_EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="acc_desc">Dipakai Rizzxy Store untuk menekan tombol Home otomatis di sela urutan buka server, dan untuk mengetuk titik layar pada fitur Nickname otomatis (RUN 2). Tidak membaca layar atau data apa pun.</string>
+              <string name="acc_desc">Dipakai Yiaa Store untuk menekan tombol Home otomatis di sela urutan buka server, dan untuk mengetuk titik layar pada fitur Nickname otomatis (RUN 2). Tidak membaca layar atau data apa pun.</string>
+          </resources>
+          RZX_EOF
+          mkdir -p "$(dirname 'app/src/main/res/values/styles.xml')"
+          cat > 'app/src/main/res/values/styles.xml' <<'RZX_EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+                  <item name="android:colorAccent">#A855F7</item>
+                  <item name="android:colorPrimary">#1A1030</item>
+                  <item name="android:colorPrimaryDark">#0B0714</item>
+                  <item name="android:colorControlActivated">#A855F7</item>
+                  <item name="android:windowBackground">@android:color/black</item>
+                  <item name="android:statusBarColor">#0B0714</item>
+                  <item name="android:navigationBarColor">#0B0714</item>
+                  <item name="android:textColorHint">#7C6FA3</item>
+              </style>
           </resources>
           RZX_EOF
           mkdir -p "$(dirname 'app/src/main/res/xml/accessibility_service.xml')"
@@ -2545,7 +2707,7 @@ jobs:
                   maven { url = uri("https://jitpack.io") }
               }
           }
-          rootProject.name = "RizzxyStore"
+          rootProject.name = "YiaaStore"
           include(":app")
           RZX_EOF
           # ikon launcher
@@ -2743,5 +2905,5 @@ jobs:
         run: gradle assembleDebug
       - uses: actions/upload-artifact@v4
         with:
-          name: RizzxyStore-apk
+          name: YiaaStore-apk
           path: project/app/build/outputs/apk/debug/app-debug.apk
